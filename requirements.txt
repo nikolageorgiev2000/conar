@@ -1,15 +1,11 @@
 schema
 docopt
-numpy
--f https://data.pyg.org/whl/torch-2.4.0+cu124.html
-torch
-torch_geometric
--f https://data.pyg.org/whl/torch-2.4.0+cu124.html
-pyg_lib
--f https://data.pyg.org/whl/torch-2.4.0+cu124.html
-torch_scatter
--f https://data.pyg.org/whl/torch-2.4.0+cu124.html
-torch_sparse
+numpy -f https://data.pyg.org/whl/torch-2.4.0+cu124.html
+torch -f https://data.pyg.org/whl/torch-2.4.0+cu124.html
+torch_geometric -f https://data.pyg.org/whl/torch-2.4.0+cu124.html
+pyg_lib -f https://data.pyg.org/whl/torch-2.4.0+cu124.html
+torch_scatter -f https://data.pyg.org/whl/torch-2.4.0+cu124.html
+torch_sparse -f https://data.pyg.org/whl/torch-2.4.0+cu124.html
 pytorch-lightning
 dm_clrs
 importlib_resources
