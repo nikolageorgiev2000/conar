@@ -49,6 +49,7 @@ from docopt import docopt
 import schema
 import torch
 import pytorch_lightning as pl
+import lightning_fabric as lf
 
 
 from models.gnns import _PROCESSSOR_DICT
@@ -81,7 +82,7 @@ if __name__ == '__main__':
     args = docopt(__doc__)
     args = schema.validate(args)
     name = args['--model-name'] if args['--model-name'] is not None else datetime.now().strftime('%b-%d-%Y-%H-%M')
-    pl.utilities.seed.seed_everything(args['--seed'])
+    lf.utilities.seed.seed_everything(args['--seed'])
 
     lit_processor = LitAlgorithmProcessor(
         hidden_dim,

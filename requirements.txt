@@ -10,7 +10,7 @@ pyg_lib
 torch_scatter
 -f https://data.pyg.org/whl/torch-2.0.0+cu118.html
 torch_sparse
-pytorch-lightning==1.8.1
+pytorch-lightning
 dm_clrs
 importlib_resources
 seaborn
@@ -21,3 +21,4 @@ zython
 minizinc
 pulp
 elkai
+pyconcorde @ git+https://github.com/jvkersch/pyconcorde

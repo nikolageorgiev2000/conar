@@ -187,7 +187,7 @@ class TSPLarge(Dataset):
         return len(self.processed_file_names)
 
     def get(self, idx):
-        data = torch.load(osp.join(self.processed_dir, f'data_{idx}.pt'))
+        data = torch.load(osp.join(self.processed_dir, f'data_{idx}.pt'), weights_only=False)
         return data
 
 class TSPLIB(InMemoryDataset):
@@ -257,7 +257,7 @@ class TSPLIB(InMemoryDataset):
                          transform=transform,
                          pre_transform=pre_transform,
                          pre_filter=pre_filter)
-        self.data, self.slices = torch.load(self.processed_paths[0])
+        self.data, self.slices = torch.load(self.processed_paths[0], weights_only=False)
         self.spec = get_TSP_spec(use_hints=False)
 
 
@@ -328,7 +328,7 @@ class TSP(InMemoryDataset):
                          transform=transform,
                          pre_transform=pre_transform,
                          pre_filter=pre_filter)
-        self.data, self.slices = torch.load(self.processed_paths[0])
+        self.data, self.slices = torch.load(self.processed_paths[0], weights_only=False)
         self.spec = get_TSP_spec(use_hints=use_hints, use_coordinates=use_coordinates)
 
     def process(self):

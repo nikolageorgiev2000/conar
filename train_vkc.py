@@ -59,6 +59,7 @@ import schema
 import torch
 import wandb
 import pytorch_lightning as pl
+import lightning_fabric as lf
 
 from models.algorithm_processor import LitAlgorithmProcessor
 from models.algorithm_reasoner import LitAlgorithmReasoner
@@ -95,7 +96,7 @@ if __name__ == '__main__':
     args = docopt(__doc__)
     args = schema.validate(args)
     name = args['--model-name'] if args['--model-name'] is not None else datetime.now().strftime('%b-%d-%Y-%H-%M')
-    pl.utilities.seed.seed_everything(args['--seed'])
+    lf.utilities.seed.seed_everything(args['--seed'])
 
     lit_processor = LitAlgorithmProcessor(
         hidden_dim,

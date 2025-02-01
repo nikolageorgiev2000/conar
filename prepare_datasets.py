@@ -1,5 +1,5 @@
 import torch
-from pytorch_lightning.utilities.seed import seed_everything
+from lightning_fabric.utilities.seed import seed_everything
 from hyperparameters import get_hyperparameters
 from datasets.constants import _DATASET_CLASSES, _DATASET_SPECS
 from datasets._configs import CONFIGS
@@ -73,8 +73,9 @@ if __name__ == "__main__":
     seed_everything(seed)
     print(f"SEEDED with {seed}")
 
-    construct_by_num_nodes_and_splits(['mst_prim', 'bellman_ford', 'bfs', 'topological_sort', 'activity_selector', 'task_scheduling', 'lcs_length', 'tsp', 'tsp_large', 'graham_scan', 'VKC', 'floyd_warshall', 'minimum', 'insertion_sort'], ['train', 'val', 'test'])
-    construct_by_num_nodes_and_splits(['tsp_large'], ['test_'+sfx for sfx in ['20', '60', '80', '100', '200', '1000']])
-    construct_by_num_nodes_and_splits(['VKC'], ['test_'+sfx for sfx in ['20', '60', '80', '100', '200']])
+    # construct_by_num_nodes_and_splits(['mst_prim', 'bellman_ford', 'bfs', 'topological_sort', 'activity_selector', 'task_scheduling', 'lcs_length', 'tsp', 'tsp_large', 'graham_scan', 'VKC', 'floyd_warshall', 'minimum', 'insertion_sort'], ['train', 'val', 'test'])
+    # construct_by_num_nodes_and_splits(['tsp_large'], ['test_'+sfx for sfx in ['20', '60', '80', '100', '200', '1000']])
+    # construct_by_num_nodes_and_splits(['VKC'], ['test_'+sfx for sfx in ['20', '60', '80', '100', '200']])
     construct_by_num_nodes_and_splits(['tsplib'], ['test_all'])
-    print_by_num_nodes_and_splits(['mst_prim', 'tsp', 'tsp_large'], ['train', 'val', 'test'])
+    print_by_num_nodes_and_splits(['tsp'], ['train', 'val', 'test'])
+    # print_by_num_nodes_and_splits(['mst_prim', 'tsp', 'tsp_large'], ['train', 'val', 'test'])
