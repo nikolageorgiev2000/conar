@@ -1,14 +1,14 @@
 schema
 docopt
 numpy
--f https://download.pytorch.org/whl/cu118
+-f https://download.pytorch.org/whl/cu126
 torch
 torch_geometric
--f https://data.pyg.org/whl/torch-2.0.0+cu118.html
+-f https://data.pyg.org/whl/cu126.html
 pyg_lib
--f https://data.pyg.org/whl/torch-2.0.0+cu118.html
+-f https://data.pyg.org/whl/cu126.html
 torch_scatter
--f https://data.pyg.org/whl/torch-2.0.0+cu118.html
+-f https://data.pyg.org/whl/cu126.html
 torch_sparse
 pytorch-lightning
 dm_clrs

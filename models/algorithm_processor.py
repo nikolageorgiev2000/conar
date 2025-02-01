@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 import pytorch_lightning as pl
-from pytorch_lightning.trainer.supporters import CombinedLoader
+from pytorch_lightning.utilities import CombinedLoader
 
 from models.gnns import LitProcessorSet
 from hyperparameters import get_hyperparameters

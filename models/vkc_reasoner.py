@@ -7,7 +7,7 @@ from torch_geometric.loader import DataLoader
 import torch_geometric.utils as tg_utils
 import torch_scatter
 
-from pytorch_lightning.trainer.supporters import CombinedLoader
+from pytorch_lightning.utilities import CombinedLoader
 
 import networkx as nx
 

@@ -13,7 +13,7 @@ import torch_geometric
 from torch_geometric.loader import DataLoader
 
 import pytorch_lightning as pl
-from pytorch_lightning.trainer.supporters import CombinedLoader
+from pytorch_lightning.utilities import CombinedLoader
 
 from baselines.beam_search import vmapped_beam_search_rollout, BEAM_WIDTH
 from models.algorithm_reasoner import AlgorithmReasoner, LitAlgorithmReasoner
