@@ -1,14 +1,14 @@
 numpy
-torch
 torch_geometric -f https://data.pyg.org/whl/torch-2.5.0+cu121.html
 pyg_lib -f https://data.pyg.org/whl/torch-2.5.0+cu121.html
+# torch
 
 # use cached wheels from https://www.kaggle.com/discussions/getting-started/437173
-wheelhouse/torch_sparse-0.6.18-cp310-cp310-linux_x86_64.whl
-wheelhouse/torch_scatter-2.1.2-cp310-cp310-linux_x86_64.whl
-# otherwise will face long built time (~30 min)
-# torch_sparse -f https://data.pyg.org/whl/torch-2.5.0+cu121.html
-# torch_scatter -f https://data.pyg.org/whl/torch-2.5.0+cu121.html
+# wheelhouse/torch_sparse-0.6.18-cp310-cp310-linux_x86_64.whl
+# wheelhouse/torch_scatter-2.1.2-cp310-cp310-linux_x86_64.whl
+# otherwise might face long built time (~30 min)
+torch_sparse -f https://data.pyg.org/whl/torch-2.5.0+cu121.html
+torch_scatter -f https://data.pyg.org/whl/torch-2.5.0+cu121.html
 
 
 pytorch-lightning
