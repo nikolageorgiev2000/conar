@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import torch_geometric
 import pytorch_lightning as pl
 import networkx as nx
-from .datasets._configs import CONFIGS
+from datasets._configs import CONFIGS
 
 def maybe_remove(path): # path can be regex
     try:

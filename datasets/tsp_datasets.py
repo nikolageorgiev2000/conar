@@ -8,7 +8,7 @@ import re
 from concorde.tsp import TSPSolver
 from torch_geometric.data import Data, DataLoader, InMemoryDataset, Dataset, download, extract_gz, download_url, extract_tar
 from torch_geometric.utils import dense_to_sparse
-from ..utils_execution import edge_one_hot_encode_pointers, compute_tour_cost
+from utils_execution import edge_one_hot_encode_pointers, compute_tour_cost
 from clrs import Stage, Location, Type
 
 LOW_, HIGH_ = 0, 1000
