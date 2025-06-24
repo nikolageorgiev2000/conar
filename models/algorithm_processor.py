@@ -146,6 +146,8 @@ class LitAlgorithmProcessor(pl.LightningModule):
         return {'loss': total_loss}
 
     def valtest_step(self, batch, batch_idx, mode):
+        if isinstance(batch, tuple) and isinstance(batch[0], dict):
+            batch = batch[0]
         output = {}
         total_loss = 0
         for name, algorithm in self.algorithms.items():
