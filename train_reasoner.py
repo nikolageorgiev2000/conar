@@ -58,6 +58,8 @@ from models.algorithm_processor import LitAlgorithmProcessor
 from hyperparameters import get_hyperparameters
 from utils_execution import ReasonerZeroerCallback, get_callbacks, maybe_remove
 
+import sys
+sys.path.append(f"{os.getcwd()}/conar")  # go to parent dir
 
 if __name__ == '__main__':
     hidden_dim = get_hyperparameters()['dim_latent']
@@ -111,7 +113,7 @@ if __name__ == '__main__':
         check_val_every_n_epoch=1,
         log_every_n_steps=10,
         gradient_clip_val=args['--gradient-clip-val'],
-        logger=pl.loggers.WandbLogger(project='conar', entity='d-n-d', log_model=True, group=None),
+        logger=pl.loggers.WandbLogger(project='conar', log_model=True, group=None),
     )
     maybe_remove(f'./serialised_models/best_{name}.ckpt')
     maybe_remove(f'./serialised_models/{name}-epoch_*.ckpt')
