@@ -1,13 +1,14 @@
 import torch
 import torch.nn as nn
 import pytorch_lightning as pl
-from layers.gnns import MPNN, GATv2, TripletMPNN, GPS
+from layers.gnns import MPNN, GATv2, TripletMPNN, GPS, S2V
 
 _PROCESSSOR_DICT = {
     'MPNN': MPNN,
     'GATv2': GATv2,
     'TriMPNN': TripletMPNN,
     'GPS': GPS,
+    'S2V': S2V,
 }
 
 class LitProcessorSet(pl.LightningModule):

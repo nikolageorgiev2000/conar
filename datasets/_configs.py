@@ -2,16 +2,16 @@ from collections import defaultdict
 
 _DEFAULT_CONFIG = {
     "train": {
-        "num_samples": 10000,
-        "num_nodes": 16
+        "num_samples": 10_000,
+        "num_nodes": 20
     },
     "val": {
-        "num_samples": 100,
-        "num_nodes": 16
+        "num_samples": 1_000,
+        "num_nodes": 20
     },
     "test": {
-        "num_samples": 100,
-        "num_nodes": 64
+        "num_samples": 1000,
+        "num_nodes": 40
     }
 }
 CONFIGS = defaultdict(lambda: _DEFAULT_CONFIG)
