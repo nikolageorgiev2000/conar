@@ -224,5 +224,84 @@ class GPS(torch.nn.Module):
             x = conv(node_fts, edge_index, node_fts=node_fts, edge_attr=edge_attr, graph_fts=graph_fts, ei=edge_index, hidden=hidden, edges_hidden=edges_hidden, batch=batch.batch, btch=batch)
         return x, edges_hidden
 
+class S2V(nng.MessagePassing):
+    def __init__(self, in_channels, out_channels, edge_dim, aggr='mean', bias=False, flow='source_to_target', 
+                 iterations=3, share_weights=True, **unused_kwargs):
+        # Handle aggregation - convert string to list for MultiAggregation
+        if isinstance(aggr, str):
+            aggr_options = [aggr]
+        else:
+            aggr_options = aggr if isinstance(aggr, list) else ['mean']
+        
+        self.aggrs = aggr_options
+        super(S2V, self).__init__(aggr=nng.MultiAggregation(self.aggrs, mode='cat'))
+
+        self.iterations = iterations
+        self.share_weights = share_weights
+        self.out_channels = out_channels
+
+        # == Parameters analogous to the TSP S2V ==
+        message_dim = out_channels * len(self.aggrs)  # Aggregated message dimension
+        self.w_n2l = nn.Linear(in_channels, out_channels, bias=bias)  # node to latent
+        self.w_e2l = nn.Linear(edge_dim, out_channels, bias=bias)     # edge to latent
+
+        if share_weights:
+            # Original implementation: shared weights across iterations
+            self.p_node_conv = nn.Linear(out_channels, out_channels, bias=bias)
+            self.combine_layer = nn.Linear(message_dim + out_channels, out_channels, bias=bias)
+        else:
+            # New implementation: separate weights for each iteration
+            self.p_node_convs = nn.ModuleList([
+                nn.Linear(out_channels, out_channels, bias=bias) for _ in range(iterations)
+            ])
+            self.combine_layers = nn.ModuleList([
+                nn.Linear(message_dim + out_channels, out_channels, bias=bias) for _ in range(iterations)
+            ])
+
+    def forward(self, node_fts, edge_attr, graph_fts, edge_index, hidden, edges_hidden, batch=None, **kwargs):
+        # Add graph features to node features (CONAR pattern)
+        x = node_fts + graph_fts[batch.batch]
+        
+        # Concatenate with hidden state (CONAR pattern)
+        x = torch.cat((x, hidden), dim=-1)
+        
+        # Project to latent dimension
+        node_embed = F.leaky_relu(self.w_n2l(x))  # (N, out_channels)
+        edge_init = F.leaky_relu(self.w_e2l(edge_attr))  # (E, out_channels)
+
+        cur_node_embed = node_embed
+
+        # Message passing iterations - shared or iteration-specific weights
+        for i in range(self.iterations):
+            if self.share_weights:
+                # Use shared weights (original implementation)
+                msg_linear = self.p_node_conv(cur_node_embed)  # (N, out_channels) -> (N, out_channels)
+                out = self.propagate(edge_index, x=msg_linear, edge_init=edge_init)  # (N, message_dim)
+                # (N, message_dim + out_channels)
+                combined = torch.cat([out, cur_node_embed], dim=-1)
+                cur_node_embed = F.leaky_relu(self.combine_layer(combined))  # (N, out_channels)
+            else:
+                # Use iteration-specific weights
+                msg_linear = self.p_node_convs[i](cur_node_embed)  # (N, out_channels) -> (N, out_channels)
+                out = self.propagate(edge_index, x=msg_linear, edge_init=edge_init)  # (N, message_dim)
+                # (N, message_dim + out_channels)
+                combined = torch.cat([out, cur_node_embed], dim=-1)
+                cur_node_embed = F.leaky_relu(self.combine_layers[i](combined))  # (N, out_channels)
+
+        # Add residual connection with original hidden state (CONAR pattern)
+        final_hidden = cur_node_embed + hidden
+        
+        # Apply clamping if not training (CONAR pattern)
+        if not self.training:
+            final_hidden = torch.clamp(final_hidden, -1e9, 1e9)
+        
+        return final_hidden, edges_hidden
+
+    def message(self, x_j, edge_init):
+        edge_rep = x_j + edge_init
+        edge_rep = F.leaky_relu(edge_rep)
+        return edge_rep
+
+
 if __name__ == '__main__':
     breakpoint()
