@@ -50,10 +50,14 @@ def print_by_num_nodes_and_splits(dataset_names, splits, do_plot=False):
             dataclass = _DATASET_SPECS[dn]['dataclass']
             rd = _DATASET_SPECS[dn]['rootdir']
             offset = nn*3
-            if split == 'val':
+            if 'train' in split:
+                offset += 0
+            elif 'val' in split:
                 offset += 1
-            if split == 'test':
+            elif 'test' in split:
                 offset += 2
+            else:
+                raise ValueError(f"Invalid split: {split}. Must be in ['train', 'val', 'test'].")
             f = dataclass(rd, algorithm=dn, split=split, num_nodes=nn, num_samples=ns, seed=(get_hyperparameters()['seed']+offset))
             print('class', dataclass, 'nn', nn, 'sum', f[0].edge_index.sum())
             return f

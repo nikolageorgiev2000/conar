@@ -15,7 +15,7 @@ from concorde.tsp import TSPSolver
 from torch_geometric.data import Data, DataLoader, InMemoryDataset, Dataset, download, extract_gz, download_url, extract_tar
 from torch_geometric.utils import dense_to_sparse
 from utils_execution import edge_one_hot_encode_pointers, compute_tour_cost
-from tsp_structs import _solve_proximity_exact, solve_farthest_addition, solve_nearest_addition, solve_christofides, calc_tour_length
+from tsp_structs import State, _solve_proximity_exact, solve_farthest_addition, solve_nearest_addition, solve_christofides, calc_tour_length
 from clrs import Stage, Location, Type
 
 LOW_, HIGH_ = 0, 2**16-1
@@ -122,7 +122,7 @@ def create_Data_point(coords, tour, start_tour, num_nodes, maxlen=None):
         weights=data.edge_attr)
     # ensure num_nodes attribute is present for downstream heuristics
     data.num_nodes = num_nodes
-    data.start_node = start_tour
+    data.start_node = start_tour.item()
     return data
 
 def get_TSP_spec(use_hints=False, use_coordinates=False):
@@ -423,41 +423,60 @@ class ExtendedTSP(InMemoryDataset):
             tour_p = tuple(state_list_p[-1].tour)
             length_p = calc_tour_length(tour_p, data.edge_attr, data.num_nodes)
             assert compare_floats(length_p, sum(rewards_p)), f"Proximity length mismatch: {length_p} != {sum(rewards_p)}. Graph-size: {data.num_nodes}."
-            data.proximity_tour = torch.tensor(list(tour_p), dtype=torch.long)
-            data.proximity_actions = torch.tensor(list(actions_p), dtype=torch.long)
-            data.proximity_length = torch.tensor(length_p, dtype=torch.float)
+            data.proximity_length = length_p
+            data.proximity_tour = tour_p
+            data.proximity_expansion_order = torch.arange(num_nodes)
+            data.proximity_actions = actions_p
+            data.proximity_rewards = rewards_p
+
+
+            def create_expansion_order_for_insertion(tour, actions):
+                expansion_order = [None] * len(tour)
+                for i, a in enumerate(actions):
+                    expansion_order[tour.index(a)] = i
+                return expansion_order
 
             # Farthest addition
             state_list_f, actions_f, rewards_f = solve_farthest_addition(data, return_sequence=True)
             tour_f = tuple(state_list_f[-1].tour)
             length_f = calc_tour_length(tour_f, data.edge_attr, data.num_nodes)
             assert compare_floats(length_f, sum(rewards_f)), f"Farthest addition length mismatch: {length_f} != {sum(rewards_f)}. Graph-size: {data.num_nodes}."
-            data.farthest_addition_tour = torch.tensor(list(tour_f), dtype=torch.long)
-            data.farthest_addition_actions = torch.tensor(list(actions_f), dtype=torch.long)
-            data.farthest_addition_length = torch.tensor(length_f, dtype=torch.float)
+            data.farthest_addition_length = length_f
+            data.farthest_addition_tour = tour_f
+            data.farthest_addition_expansion_order = create_expansion_order_for_insertion(tour_f, actions_f)
+            assert None not in data.farthest_addition_expansion_order, f"Farthest addition expansion order contains None. Graph-size: {data.num_nodes}."
+            data.farthest_addition_actions = actions_f
+            data.farthest_addition_rewards = rewards_f
 
             # Nearest addition
             state_list_n, actions_n, rewards_n = solve_nearest_addition(data, return_sequence=True)
             tour_n = tuple(state_list_n[-1].tour)
             length_n = calc_tour_length(tour_n, data.edge_attr, data.num_nodes)
             assert compare_floats(length_n, sum(rewards_n)), f"Nearest addition length mismatch: {length_n} != {sum(rewards_n)}. Graph-size: {data.num_nodes}."
-            data.nearest_addition_tour = torch.tensor(list(tour_n), dtype=torch.long)
-            data.nearest_addition_actions = torch.tensor(list(actions_n), dtype=torch.long)
-            data.nearest_addition_length = torch.tensor(length_n, dtype=torch.float)
-
+            data.nearest_addition_length = length_n
+            data.nearest_addition_tour = tour_n
+            data.nearest_addition_expansion_order = create_expansion_order_for_insertion(tour_n, actions_n)
+            assert None not in data.nearest_addition_expansion_order, f"Nearest addition expansion order contains None. Graph-size: {data.num_nodes}."
+            data.nearest_addition_actions = actions_n
+            data.nearest_addition_rewards = rewards_n
+            
             # Christofides (one-shot) - rotate to start at the provided start node
             tour_c = solve_christofides(data)
-
             assert s_i in tour_c, f"Start node {s_i} not in tour {tour_c}"
             rot_idx = tour_c.index(s_i)
             rotated = list(tour_c[rot_idx:] + tour_c[:rot_idx])
             assert rotated[0] == s_i, f"Rotated tour does not start at start node: {rotated}"
 
+            # Assume 'append' expansion method for Christofides
             length_c = calc_tour_length(tuple(rotated), data.edge_attr, data.num_nodes)
-            data.christofides_tour = torch.tensor(rotated, dtype=torch.long)
-            data.christofides_actions = torch.tensor(rotated, dtype=torch.long)
-            data.christofides_length = torch.tensor(length_c, dtype=torch.float)
-
+            data.christofides_length = length_c
+            data.christofides_tour = rotated
+            data.christofides_expansion_order = torch.arange(num_nodes)
+            data.christofides_actions = rotated
+            data.christofides_rewards = [data.edge_attr[num_nodes * i + j] for i, j in zip(rotated, rotated[1:])]
+            data.christofides_rewards[-1] += data.edge_attr[num_nodes * rotated[-1] + rotated[0]]
+            assert compare_floats(length_c, sum(data.christofides_rewards)), f"Christofides length mismatch: {length_c} != {sum(data.christofides_rewards)}. Graph-size: {data.num_nodes}."
+            
             data_list.append(data)
 
         data, slices = self.collate(data_list)
