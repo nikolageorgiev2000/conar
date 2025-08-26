@@ -1,7 +1,7 @@
 import os.path as osp
 from collections import defaultdict
 from datasets.clrs_datasets import CLRS
-from datasets.tsp_datasets import TSP, TSPLarge, TSPLIB
+from datasets.tsp_datasets import TSP, ExtendedTSP, TSPLarge, TSPLIB
 from datasets.vertex_k_center import VKCLarge
 from clrs._src.specs import SPECS
 from clrs import Type, Location, Stage
@@ -72,7 +72,7 @@ _DATASET_SPECS = defaultdict(lambda: dict({
         'data_spec': _BF_SPEC,
     },
     'tsp': {
-        'dataclass': TSP,
+        'dataclass': ExtendedTSP,
         'rootdir': _DATASET_ROOTS['tsp'],
         # 'data_spec': _MST_SPEC,
     },
