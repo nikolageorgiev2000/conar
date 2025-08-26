@@ -81,5 +81,5 @@ if __name__ == "__main__":
     # construct_by_num_nodes_and_splits(['tsp_large'], ['test_'+sfx for sfx in ['20', '60', '80', '100', '200', '1000']])
     # construct_by_num_nodes_and_splits(['VKC'], ['test_'+sfx for sfx in ['20', '60', '80', '100', '200']])
     # construct_by_num_nodes_and_splits(['tsplib'], ['test_all'])
-    print_by_num_nodes_and_splits(['tsp'], ['train_20', 'val_20', 'test_40', 'test_80', 'test_160'])
+    print_by_num_nodes_and_splits(['tsp'], ['train_20', 'val_20', 'test_20', 'test_40', 'test_80', 'test_160'])
     # print_by_num_nodes_and_splits(['tsp', 'tsp_large'], ['train', 'val', 'test'])

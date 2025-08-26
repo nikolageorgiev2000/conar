@@ -21,19 +21,23 @@ CONFIGS['tsp'] = {
         "num_nodes": 20
     },
     "val_20": {
+        "num_samples": 10_000,
+        "num_nodes": 20
+    },
+    "test_20": {
         "num_samples": 1_000,
         "num_nodes": 20
     },
     "test_40": {
-        "num_samples": 1_000,
+        "num_samples": 500,
         "num_nodes": 40
     },
     "test_80": {
-        "num_samples": 100,
+        "num_samples": 200,
         "num_nodes": 80
     },
     "test_160": {
-        "num_samples": 10,
+        "num_samples": 100,
         "num_nodes": 160
     },
 }
