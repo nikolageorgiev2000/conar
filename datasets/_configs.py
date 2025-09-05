@@ -17,8 +17,12 @@ _DEFAULT_CONFIG = {
 CONFIGS = defaultdict(lambda: _DEFAULT_CONFIG)
 CONFIGS['tsp'] = {
     "train_20": {
-        "num_samples": 100_000,
+        "num_samples": 51_000,
         "num_nodes": 20
+    },
+    "train_40": {
+        "num_samples": 51_000,
+        "num_nodes": 40
     },
     "val_20": {
         "num_samples": 10_000,
